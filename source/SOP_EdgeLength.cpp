@@ -4,12 +4,12 @@
 	IMPORTANT! ------------------------------------------	
 	-----------------------------------------------------
 
-	Author: 	SNOWFLAKE
-	Email:		snowflake@outlook.com
+	Author: 	SWANN
+	Email:		sebastianswann@outlook.com
 
 	LICENSE ------------------------------------------
 
-	Copyright (c) 2016-2017 SNOWFLAKE
+	Copyright (c) 2016-2017 SWANN
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
