@@ -1,0 +1,26 @@
+#type: node
+#context: sop
+#internal: edgelength
+#largeicon: /nodes/sop/SOP_EdgeLength.png
+
+#tags: shape
+
+= Edge Length =
+
+""" Set length of edges in arbitrary positions """
+
+@parameters
+
+== Additional ==
+
+Description:
+    #id: adddescription
+    Add description message to node
+	
+Clean:
+    #id: cleandescription
+    Clean description message field
+
+Message:
+    #id: descriptionmessage
+    Message that will be displayed
