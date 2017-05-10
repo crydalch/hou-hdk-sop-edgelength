@@ -1,3 +1,7 @@
+# SOP Edge Length HDK implementation. #
+
+Overview [video](https://www.youtube.com/watch?v=g-z_6GPlp3U&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=4) on YouTube.
+
 **IMPORTANT:**
 * Requires [hou-hdk-common](https://github.com/sebastianswann/hou-hdk-common) repository
 * Read other requiments on mentioned above repository
