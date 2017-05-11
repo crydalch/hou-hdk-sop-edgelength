@@ -1,5 +1,8 @@
 # SOP Edge Length HDK implementation. #
 
+![Example](/home/config/help/nodes/sop/edge-length-selection-0.gif)
+![Example](/home/config/help/nodes/sop/edge-length-selection-2.gif)
+
 Overview [video](https://www.youtube.com/watch?v=g-z_6GPlp3U&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=4) on YouTube.
 
 **IMPORTANT:**
