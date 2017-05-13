@@ -10,6 +10,7 @@
 
 */[Oo]tls/[Bb]ackup/
 */[Dd]so/
+*.pyc
 
 ##############################
 # VS generated files
