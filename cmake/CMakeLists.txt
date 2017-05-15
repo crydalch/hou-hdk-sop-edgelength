@@ -26,7 +26,8 @@ DEFAULTS                                                           |
 Project(SOP_EdgeLength)
 
 # set available compile configuration types
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo")
+#set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo")
+set(CMAKE_CONFIGURATION_TYPES "Release")
 
 # get custom modules
 Set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
