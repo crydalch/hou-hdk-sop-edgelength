@@ -93,7 +93,7 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	exint is0Connected = getInput(0) == NULL ? 0 : 1;
+	exint is0Connected = getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
@@ -210,7 +210,9 @@ OPERATOR INITIALIZATION                                            |
 ----------------------------------------------------------------- */
 
 SOP_Operator::~SOP_EdgeLength() { }
-SOP_Operator::SOP_EdgeLength(OP_Network* network, const char* name, OP_Operator* op) : SOP_Base_Operator(network, name, op)
+SOP_Operator::SOP_EdgeLength(OP_Network* network, const char* name, OP_Operator* op) 
+: SOP_Base_Operator(network, name, op), 
+_edgeGroupInput0(nullptr)
 { op->setIconName(SOP_Icon_Name); }
 
 OP_Node* 
@@ -229,7 +231,7 @@ HELPERS                                                            |
 ----------------------------------------------------------------- */
 
 void
-SOP_Operator::WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue)
+SOP_Operator::WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const
 {
 	const auto smallerOffset = edgeisland.First() < edgeisland.Last() ? edgeisland.First() : edgeisland.Last();
 	const auto biggerOffset = edgeisland.First() == smallerOffset ? edgeisland.Last() : edgeisland.First();
@@ -259,7 +261,7 @@ SOP_Operator::WhenSmallerOrBigger(const exint lengthmode, const exint startfrom,
 }
 
 void
-SOP_Operator::WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue)
+SOP_Operator::WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const
 {
 	const auto positionA = this->gdp->getPos3(edgeisland.Last());
 	const auto positionB = this->gdp->getPos3(edgeisland.First());
@@ -301,7 +303,7 @@ SOP_Operator::WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, f
 }
 
 void
-SOP_Operator::WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue)
+SOP_Operator::WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const
 {	
 	const auto positionA = this->gdp->getPos3(edgeisland.First());
 	const auto positionB = this->gdp->getPos3(edgeisland.Last());
@@ -314,8 +316,8 @@ SOP_Operator::WhenClosestOrFarthest(const exint lengthmode, const exint startfro
 	directionA.normalize();
 	directionB.normalize();
 
-	auto measuredDistanceA = (positionA - (UT_Vector3)position).length();
-	auto measuredDistanceB = (positionB - (UT_Vector3)position).length();
+	auto measuredDistanceA = (positionA - static_cast<UT_Vector3>(position)).length();
+	auto measuredDistanceB = (positionB - static_cast<UT_Vector3>(position)).length();
 
 	if (startfrom == 3)
 	{
@@ -531,7 +533,7 @@ MSS_Selector::MSS_EdgeLengthSelector(OP3D_View& viewer, PI_SelectorTemplate& tem
 
 BM_InputSelector*
 MSS_Selector::CreateMe(BM_View& viewer, PI_SelectorTemplate& templ)
-{ return new MSS_Selector((OP3D_View&)viewer, templ); }
+{ return new MSS_Selector(reinterpret_cast<OP3D_View&>(viewer), templ); }
 
 const char*
 MSS_Selector::className() const

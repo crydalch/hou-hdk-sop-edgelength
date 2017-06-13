@@ -85,9 +85,9 @@ DECLARE_SOP_Namespace_Start()
 		static int								CallbackSetMorph(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:		
-		void									WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue);
-		void									WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue);
-		void									WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue);
+		void									WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
+		void									WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
+		void									WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
 		OP_ERROR								SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_AutoInterrupt progress, fpreal time);
 
 		const GA_EdgeGroup*						_edgeGroupInput0;		

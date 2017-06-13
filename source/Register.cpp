@@ -56,9 +56,7 @@ OPERATOR                                                           |
 
 void 
 newSopOperator(OP_OperatorTable* table)
-{
-	auto success = false;
-		
+{	
 	auto sop = new OP_Operator
 	(
 		SOP_SmallName,
@@ -74,7 +72,7 @@ newSopOperator(OP_OperatorTable* table)
 		SOP_TabMenuPath
 	);
 	
-	success = table->addOperator(sop);	
+	auto success = table->addOperator(sop);	
 	//table->addOpHidden(sop->getName());	
 }
 
@@ -104,7 +102,7 @@ newSelector(BM_ResourceManager* manager)
 	if (sopOperator)
 	{
 		// setup selector
-		sopSelector->constructor((void *)&MSS_Selector::CreateMe);
+		sopSelector->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
 		sopSelector->data(OP3DtheEdgeSelTypes);
 
 		auto success = manager->registerSelector(sopSelector);
