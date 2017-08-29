@@ -41,6 +41,9 @@ INCLUDES                                                           |
 
 // this
 #include "Parameters.h"
+#include "ProcessModeOption.h"
+#include "LengthModeOption.h"
+#include "StartFromOption.h"
 
 /* -----------------------------------------------------------------
 DEFINES                                                            |
@@ -160,17 +163,17 @@ SOP_Operator::CallbackLenghtMode(void* data, int index, float time, const PRM_Te
 	exint lenghtModeState;
 	PRM_ACCESS::Get::IntPRM(me, lenghtModeState, UI::lengthModeChoiceMenu_Parameter, time);
 
-	if (lenghtModeState == 0)
+	if (lenghtModeState == static_cast<exint>(LengthModeOption::OVERRIDE))
 	{
 		auto defVal = UI::lengthOverrideValueFloat_Parameter.getFactoryDefaults()->getFloat();
 		PRM_ACCESS::Set::FloatPRM(me, defVal, UI::lengthOverrideValueFloat_Parameter, time);
 	}
-	else if (lenghtModeState == 1)
+	else if (lenghtModeState == static_cast<exint>(LengthModeOption::PERCENTAGE))
 	{
 		auto defVal = UI::lengthPercentageValueFloat_Parameter.getFactoryDefaults()->getFloat();
 		PRM_ACCESS::Set::FloatPRM(me, defVal, UI::lengthPercentageValueFloat_Parameter, time);
 	}
-	else if (lenghtModeState == 2)
+	else if (lenghtModeState == static_cast<exint>(LengthModeOption::CUSTOM))
 	{
 		auto defVal = UI::lengthCustomValueFloat_Parameter.getFactoryDefaults()->getFloat();
 		PRM_ACCESS::Set::FloatPRM(me, defVal, UI::lengthCustomValueFloat_Parameter, time);
@@ -240,22 +243,22 @@ SOP_Operator::WhenSmallerOrBigger(const exint lengthmode, const exint startfrom,
 
 	direction.normalize();
 
-	if (startfrom)
+	if (startfrom == static_cast<exint>(StartFromOption::BIGGER_NUMBER))
 	{
 		switch (lengthmode)
 		{
-			case 0: { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(smallerOffset) + (-direction * lengthvalue)); } break;
-			case 1: { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(biggerOffset) + (-direction * (distance * lengthvalue))); } break;
-			case 2: { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(biggerOffset) + (-direction * lengthvalue)); } break;
+			case static_cast<exint>(LengthModeOption::OVERRIDE): { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(smallerOffset) + (-direction * lengthvalue)); } break;
+			case static_cast<exint>(LengthModeOption::PERCENTAGE): { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(biggerOffset) + (-direction * (distance * lengthvalue))); } break;
+			case static_cast<exint>(LengthModeOption::CUSTOM): { this->gdp->setPos3(smallerOffset, this->gdp->getPos3(biggerOffset) + (-direction * lengthvalue)); } break;
 		}
 	}
-	else
+	else if (startfrom == static_cast<exint>(StartFromOption::SMALLER_NUMBER))
 	{
 		switch (lengthmode)
 		{
-			case 0: { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(biggerOffset) + direction * lengthvalue); } break;
-			case 1: { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(smallerOffset) + direction * (distance * lengthvalue)); } break;
-			case 2: { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(smallerOffset) + direction * lengthvalue); } break;
+			case static_cast<exint>(LengthModeOption::OVERRIDE): { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(biggerOffset) + direction * lengthvalue); } break;
+			case static_cast<exint>(LengthModeOption::PERCENTAGE): { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(smallerOffset) + direction * (distance * lengthvalue)); } break;
+			case static_cast<exint>(LengthModeOption::CUSTOM): { this->gdp->setPos3(biggerOffset, this->gdp->getPos3(smallerOffset) + direction * lengthvalue); } break;
 		}
 	}
 }
@@ -278,26 +281,26 @@ SOP_Operator::WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, f
 
 	switch (lengthmode)
 	{
-	case 0:
-		{
-			this->gdp->setPos3(edgeisland.Last(), positionA + directionA * (lengthvalue * 0.5));
-			this->gdp->setPos3(edgeisland.First(), positionB + directionB * (lengthvalue * 0.5));
-		}
-		break;
-	case 1:
-		{			
-			distance = distance * 0.5;
-			this->gdp->setPos3(edgeisland.Last(), positionA + directionA * ((distance * lengthvalue) - distance));
-			this->gdp->setPos3(edgeisland.First(), positionB + directionB * ((distance * lengthvalue) - distance));
-		}
-		break;
-	case 2:
-		{
-			lengthvalue = lengthvalue * 0.5;
-			this->gdp->setPos3(edgeisland.Last(), middle + (directionA * lengthvalue));
-			this->gdp->setPos3(edgeisland.First(), middle + (directionB * lengthvalue));
-		}
-		break;
+		case static_cast<exint>(LengthModeOption::OVERRIDE):
+			{
+				this->gdp->setPos3(edgeisland.Last(), positionA + directionA * (lengthvalue * 0.5));
+				this->gdp->setPos3(edgeisland.First(), positionB + directionB * (lengthvalue * 0.5));
+			}
+			break;
+		case static_cast<exint>(LengthModeOption::PERCENTAGE):
+			{			
+				distance = distance * 0.5;
+				this->gdp->setPos3(edgeisland.Last(), positionA + directionA * ((distance * lengthvalue) - distance));
+				this->gdp->setPos3(edgeisland.First(), positionB + directionB * ((distance * lengthvalue) - distance));
+			}
+			break;
+		case static_cast<exint>(LengthModeOption::CUSTOM):
+			{
+				lengthvalue = lengthvalue * 0.5;
+				this->gdp->setPos3(edgeisland.Last(), middle + (directionA * lengthvalue));
+				this->gdp->setPos3(edgeisland.First(), middle + (directionB * lengthvalue));
+			}
+			break;
 	}
 
 }
@@ -319,52 +322,52 @@ SOP_Operator::WhenClosestOrFarthest(const exint lengthmode, const exint startfro
 	auto measuredDistanceA = (positionA - static_cast<UT_Vector3>(position)).length();
 	auto measuredDistanceB = (positionB - static_cast<UT_Vector3>(position)).length();
 
-	if (startfrom == 3)
+	if (startfrom == static_cast<exint>(StartFromOption::CLOSEST_TO_POSITION))
 	{
 		switch (lengthmode)
 		{
-		case 0:
-			{
-				if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + (directionA * lengthvalue));
-				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + (directionB * lengthvalue));
-			}
-			break;
-		case 1:
-			{
-				if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + directionA * ((distanceA * lengthvalue) - distanceA));
-				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + directionB * ((distanceB * lengthvalue) - distanceB));
-			}
-			break;
-		case 2:
-			{
-				if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.Last()) + (directionA * lengthvalue));
-				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.First()) + (directionB * lengthvalue));
-			}
-			break;
+			case static_cast<exint>(LengthModeOption::OVERRIDE):
+				{
+					if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + (directionA * lengthvalue));
+					else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + (directionB * lengthvalue));
+				}
+				break;
+			case static_cast<exint>(LengthModeOption::PERCENTAGE):
+				{
+					if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + directionA * ((distanceA * lengthvalue) - distanceA));
+					else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + directionB * ((distanceB * lengthvalue) - distanceB));
+				}
+				break;
+			case static_cast<exint>(LengthModeOption::CUSTOM):
+				{
+					if (measuredDistanceA >= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.Last()) + (directionA * lengthvalue));
+					else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.First()) + (directionB * lengthvalue));
+				}
+				break;
 		}
 	}
-	else if (startfrom == 4)
+	else if (startfrom == static_cast<exint>(StartFromOption::FARTHEST_TO_POSITION))
 	{
 		switch (lengthmode)
 		{
-		case 0:
+			case static_cast<exint>(LengthModeOption::OVERRIDE):
+				{
+					if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + (directionA * lengthvalue));
+					else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + (directionB * lengthvalue));
+				}
+				break;
+			case static_cast<exint>(LengthModeOption::PERCENTAGE):
 			{
-				if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + (directionA * lengthvalue));
-				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + (directionB * lengthvalue));
+				if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + directionA * ((distanceA * lengthvalue) - distanceA));
+				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + directionB * ((distanceB * lengthvalue) - distanceB));
 			}
-			break;
-		case 1:
-		{
-			if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.First()) + directionA * ((distanceA * lengthvalue) - distanceA));
-			else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.Last()) + directionB * ((distanceB * lengthvalue) - distanceB));
-		}
-			break;
-		case 2:
-			{
-				if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.Last()) + (directionA * lengthvalue));
-				else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.First()) + (directionB * lengthvalue));
-			}
-			break;
+				break;
+			case static_cast<exint>(LengthModeOption::CUSTOM):
+				{
+					if (measuredDistanceA <= measuredDistanceB) this->gdp->setPos3(edgeisland.First(), this->gdp->getPos3(edgeisland.Last()) + (directionA * lengthvalue));
+					else this->gdp->setPos3(edgeisland.Last(), this->gdp->getPos3(edgeisland.First()) + (directionB * lengthvalue));
+				}
+				break;
 		}
 	}
 }
@@ -387,14 +390,14 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 	PRM_ACCESS::Get::IntPRM(this, lenghtModeState, UI::lengthModeChoiceMenu_Parameter, time);
 	switch (lenghtModeState)
 	{
-		case 0: { PRM_ACCESS::Get::FloatPRM(this, lenghtValue, UI::lengthOverrideValueFloat_Parameter, time); } break;
-		case 1:
+		case static_cast<exint>(LengthModeOption::OVERRIDE): { PRM_ACCESS::Get::FloatPRM(this, lenghtValue, UI::lengthOverrideValueFloat_Parameter, time); } break;
+		case static_cast<exint>(LengthModeOption::PERCENTAGE):
 			{
 				PRM_ACCESS::Get::FloatPRM(this, lenghtValue, UI::lengthPercentageValueFloat_Parameter, time);
 				lenghtValue = 0.01 * lenghtValue; // rescale
 			}
 			break;
-		case 2: { PRM_ACCESS::Get::FloatPRM(this, lenghtValue, UI::lengthCustomValueFloat_Parameter, time); } break;
+		case static_cast<exint>(LengthModeOption::CUSTOM): { PRM_ACCESS::Get::FloatPRM(this, lenghtValue, UI::lengthCustomValueFloat_Parameter, time); } break;
 	}
 
 	PRM_ACCESS::Get::IntPRM(this, startFromState, UI::startFromChoiceMenu_Parameter, time);
@@ -429,7 +432,7 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 			originalPositions[*it] = this->gdp->getPos3(*it);
 		}
 
-		if (processModeState == 0 || processModeState == 2)
+		if (processModeState == static_cast<exint>(ProcessModeOption::SINGLE) || processModeState == static_cast<exint>(ProcessModeOption::MIXED))
 		{
 			if (island.GetEdges().size() == 1)
 			{
@@ -437,10 +440,10 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 				else if (startFromState == 2) WhenAveranged(lenghtModeState, island, lenghtValue);
 				else WhenClosestOrFarthest(lenghtModeState, startFromState, positionPointValue, island, lenghtValue);
 			}
-			else if (processModeState != 2) THIS_AddWarning(this, "Edge islands with more than one edge detected.")
+			else if (processModeState != static_cast<exint>(ProcessModeOption::MIXED)) THIS_AddWarning(this, "Edge islands with more than one edge detected.")
 		}		
 
-		if (processModeState == 1 || processModeState == 2)
+		if (processModeState == static_cast<exint>(ProcessModeOption::MULTI) || processModeState == static_cast<exint>(ProcessModeOption::MIXED))
 		{
 			if (island.GetEdges().size() > 1)
 			{
@@ -456,13 +459,13 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 
 					switch (lenghtModeState)
 					{
-						case 0: { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(notCommonOffset) + direction * lenghtValue); } break;
-						case 1: { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(notCommonOffset) + direction * ((distance * lenghtValue) - distance)); } break;
-						case 2: { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(island.CommonOffset()) + direction * lenghtValue); } break;
+						case static_cast<exint>(LengthModeOption::OVERRIDE): { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(notCommonOffset) + direction * lenghtValue); } break;
+						case static_cast<exint>(LengthModeOption::PERCENTAGE) : { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(notCommonOffset) + direction * ((distance * lenghtValue) - distance)); } break;
+						case static_cast<exint>(LengthModeOption::CUSTOM) : { this->gdp->setPos3(notCommonOffset, this->gdp->getPos3(island.CommonOffset()) + direction * lenghtValue); } break;
 					}
 				}
 			}
-			else if (processModeState != 2) THIS_AddWarning(this, "Edge islands with one edge only detected.")
+			else if (processModeState != static_cast<exint>(ProcessModeOption::MIXED)) THIS_AddWarning(this, "Edge islands with one edge only detected.")
 		}
 
 		// morph

@@ -70,27 +70,27 @@ DECLARE_SOP_Namespace_Start()
 		DECLARE_DescriptionPRM_Callback()
 
 	protected:
-		virtual ~SOP_EdgeLength() override;
+		~SOP_EdgeLength() override;
 		SOP_EdgeLength(OP_Network* network, const char* name, OP_Operator* op);
-		virtual const char*						inputLabel(unsigned input) const override;
+		const char*						inputLabel(unsigned input) const override;
 
 	public:
-		static OP_Node*							CreateMe(OP_Network* network, const char* name, OP_Operator* op);
-		virtual OP_ERROR						cookInputGroups(OP_Context& context, int alone = 0);
-		static PRM_Template						parametersList[];
+		static OP_Node*					CreateMe(OP_Network* network, const char* name, OP_Operator* op);
+		OP_ERROR						cookInputGroups(OP_Context& context, int alone = 0) override;
+		static PRM_Template				parametersList[];
 
-		static int								CallbackProcessMode(void* data, int index, float time, const PRM_Template* tmp);
-		static int								CallbackLenghtMode(void* data, int index, float time, const PRM_Template* tmp);
-		static int								CallbackStartFrom(void* data, int index, float time, const PRM_Template* tmp);
-		static int								CallbackSetMorph(void* data, int index, float time, const PRM_Template* tmp);
+		static int						CallbackProcessMode(void* data, int index, float time, const PRM_Template* tmp);
+		static int						CallbackLenghtMode(void* data, int index, float time, const PRM_Template* tmp);
+		static int						CallbackStartFrom(void* data, int index, float time, const PRM_Template* tmp);
+		static int						CallbackSetMorph(void* data, int index, float time, const PRM_Template* tmp);
 
 	private:		
-		void									WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
-		void									WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
-		void									WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
-		OP_ERROR								SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_AutoInterrupt progress, fpreal time);
+		void							WhenSmallerOrBigger(const exint lengthmode, const exint startfrom, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
+		void							WhenAveranged(const exint lengthmode, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
+		void							WhenClosestOrFarthest(const exint lengthmode, const exint startfrom, UT_Vector3R position, GA_EdgeIsland& edgeisland, fpreal lengthvalue) const;
+		OP_ERROR						SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_AutoInterrupt progress, fpreal time);
 
-		const GA_EdgeGroup*						_edgeGroupInput0;		
+		const GA_EdgeGroup*				_edgeGroupInput0;		
 	};
 
 DECLARE_SOP_Namespace_End
@@ -108,7 +108,7 @@ public:
 	MSS_EdgeLengthSelector(OP3D_View& viewer, PI_SelectorTemplate& templ);
 
 	static BM_InputSelector*			CreateMe(BM_View& Viewer, PI_SelectorTemplate& templ);
-	virtual const char*					className() const;
+	const char*							className() const override;
 };
 
 DECLARE_SOP_Namespace_End

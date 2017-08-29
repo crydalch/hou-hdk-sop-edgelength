@@ -65,9 +65,9 @@ newSopOperator(OP_OperatorTable* table)
 		SOP_Operator::parametersList,
 		1,								// min inputs 
 		1,								// max inputs
-		0,
+		nullptr,
 		0,								// type of node OP_FLAG_GENERATOR (BE CAREFUL WITH THIS LITTLE FUCKER)
-		0,
+		nullptr,
 		1,								// outputs count
 		SOP_TabMenuPath
 	);
@@ -120,9 +120,9 @@ newSelector(BM_ResourceManager* manager)
 			1,								// 1 means this input is required.
 			"0x000000ff",					// Prim/point mask selection.
 			0,
+			nullptr,
 			0,
-			0,
-			0,
+			nullptr,
 			false
 		);
 	}
