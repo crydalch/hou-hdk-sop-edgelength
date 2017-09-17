@@ -72,7 +72,8 @@ PARAMETERLIST_Start(SOP_Operator)
 
 	UI::filterSectionSwitcher_Parameter,
 	UI::input0EdgeGroup_Parameter,
-	UI::processModeChoiceMenu_Parameter,
+	UI::processModeChoiceMenu_Parameter,	
+	UI::filterErrorsSeparator_Parameter,
 	UI::edgeIslandErrorModeChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
