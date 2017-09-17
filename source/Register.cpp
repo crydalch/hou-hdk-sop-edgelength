@@ -41,7 +41,7 @@ DEFINES                                                            |
 ----------------------------------------------------------------- */
 
 #define SOP_Operator		GET_SOP_Namespace()::SOP_EdgeLength
-#define SOP_SmallName		"modeling::edgelength::1.0"
+#define SOP_SmallName		"modeling::edgelength::1.1"
 #define SOP_BigName			"Edge Length"
 #define SOP_TabMenuPath		"Toolkit/Modeling"
 
