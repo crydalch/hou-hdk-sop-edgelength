@@ -73,6 +73,7 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::filterSectionSwitcher_Parameter,
 	UI::input0EdgeGroup_Parameter,
 	UI::processModeChoiceMenu_Parameter,
+	UI::edgeIslandErrorModeChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::lengthModeChoiceMenu_Parameter,
@@ -96,7 +97,7 @@ SOP_Operator::updateParmsFlags()
 	DEFAULTS_UpdateParmsFlags(SOP_Base_Operator)
 
 	// is input connected?
-	exint is0Connected = getInput(0) == nullptr ? 0 : 1;
+	const exint is0Connected = getInput(0) == nullptr ? 0 : 1;
 
 	/* ---------------------------- Set Global Visibility ---------------------------- */
 
@@ -136,7 +137,7 @@ IMPLEMENT_DescriptionPRM_Callback(SOP_Operator, UI)
 int
 SOP_Operator::CallbackProcessMode(void* data, int index, float time, const PRM_Template* tmp)
 {
-	auto me = reinterpret_cast<SOP_Operator*>(data);
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
 
 	// TODO: figure out why restoreFactoryDefaults() doesn't work
@@ -156,7 +157,7 @@ SOP_Operator::CallbackProcessMode(void* data, int index, float time, const PRM_T
 int
 SOP_Operator::CallbackLenghtMode(void* data, int index, float time, const PRM_Template* tmp)
 {
-	auto me = reinterpret_cast<SOP_Operator*>(data);
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
 
 	// TODO: figure out why restoreFactoryDefaults() doesn't work
@@ -185,7 +186,7 @@ SOP_Operator::CallbackLenghtMode(void* data, int index, float time, const PRM_Te
 int
 SOP_Operator::CallbackStartFrom(void* data, int index, float time, const PRM_Template* tmp)
 {
-	auto me = reinterpret_cast<SOP_Operator*>(data);
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
 
 	// TODO: figure out why restoreFactoryDefaults() doesn't work
@@ -198,7 +199,7 @@ SOP_Operator::CallbackStartFrom(void* data, int index, float time, const PRM_Tem
 int
 SOP_Operator::CallbackSetMorph(void* data, int index, float time, const PRM_Template* tmp)
 {
-	auto me = reinterpret_cast<SOP_Operator*>(data);
+	const auto me = reinterpret_cast<SOP_Operator*>(data);
 	if (!me) return 0;
 
 	// TODO: figure out why restoreFactoryDefaults() doesn't work
@@ -319,8 +320,8 @@ SOP_Operator::WhenClosestOrFarthest(const exint lengthmode, const exint startfro
 	directionA.normalize();
 	directionB.normalize();
 
-	auto measuredDistanceA = (positionA - static_cast<UT_Vector3>(position)).length();
-	auto measuredDistanceB = (positionB - static_cast<UT_Vector3>(position)).length();
+	const auto measuredDistanceA = (positionA - static_cast<UT_Vector3>(position)).length();
+	const auto measuredDistanceB = (positionB - static_cast<UT_Vector3>(position)).length();
 
 	if (startfrom == static_cast<exint>(StartFromOption::CLOSEST_TO_POSITION))
 	{
@@ -384,6 +385,7 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 	UT_Vector3R						positionPointValue;
 	bool							setMorphState;
 	fpreal							morphValueState;
+	exint							edgeIslandErrorLevelState;
 
 	PRM_ACCESS::Get::IntPRM(this, processModeState, UI::processModeChoiceMenu_Parameter, time);
 
@@ -405,11 +407,13 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 
 	PRM_ACCESS::Get::IntPRM(this, setMorphState, UI::setMorphToggle_Parameter, time);
 	PRM_ACCESS::Get::FloatPRM(this, morphValueState, UI::morphValueFloat_Parameter, time);
-
 	morphValueState = setMorphState ? 0.01 * morphValueState : 1.0;				// from percentage
+	
+	PRM_ACCESS::Get::IntPRM(this, edgeIslandErrorLevelState, UI::edgeIslandErrorModeChoiceMenu_Parameter, time);
 
-#define THIS_AddWarning(node, message) { node->addWarning(SOP_ErrorCodes::SOP_MESSAGE, message); continue; }
-#define THIS_ProgressEscape(node, message, passedprogress) if (passedprogress.wasInterrupted()) { node->addError(SOP_ErrorCodes::SOP_MESSAGE, message); return error(); }
+#define THIS_AddWarning(node, message) { switch (edgeIslandErrorLevelState) { default: /* do nothing */ continue; case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Warning) : { node->addWarning(SOP_ErrorCodes::SOP_MESSAGE, message); } continue; case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Error) : { node->addError(SOP_ErrorCodes::SOP_MESSAGE, message); } return error(); } }
+//#define THIS_AddWarning(node, message) { node->addWarning(SOP_ErrorCodes::SOP_MESSAGE, message); continue; }
+#define THIS_ProgressEscape(node, message, passedprogress) if (passedprogress.wasInterrupted()) { node->addError(SOP_ErrorCodes::SOP_MESSAGE, message); return error(); }	
 	for (auto island : edgeislands)
 	{
 		THIS_ProgressEscape(this, "Operation interrupted", progress)
@@ -418,8 +422,22 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 		island.Report();
 #endif // DEBUG_ISLANDS
 
-		// ignore islands with no endpoints
-		if (!island.IsValid() && !island.HasEndPoints()) continue;
+		// ignore islands with no endpoints				
+		if (!island.IsValid() && !island.HasEndPoints()) 
+		{
+			/*
+				In theory we never should even hit the possibility that we have closed and with no endpoints edge islands passed here, 
+				since selection automatically looks only for open islands. But to be safe we still check for it.
+			 */
+
+			const auto errorMessage = "Edge islands with no endpoints detected.";
+			switch (edgeIslandErrorLevelState)
+			{			
+				default: /* do nothing */ continue;
+				case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Warning) : { addWarning(SOP_ErrorCodes::SOP_MESSAGE, errorMessage); } continue;
+				case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Error) : { addError(SOP_ErrorCodes::SOP_MESSAGE, errorMessage); } return error();				
+			}
+		}
 
 		// clear everything to be sure that nothing is cached
 		originalPositions.clear();
@@ -452,7 +470,7 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 
 				for (auto edge : island.GetEdges())
 				{
-					auto notCommonOffset = edge.p0() == island.CommonOffset() ? edge.p1() : edge.p0();
+					const auto notCommonOffset = edge.p0() == island.CommonOffset() ? edge.p1() : edge.p0();
 					auto direction = this->gdp->getPos3(notCommonOffset) - this->gdp->getPos3(island.CommonOffset());
 					const auto distance = direction.length();
 					direction.normalize();
