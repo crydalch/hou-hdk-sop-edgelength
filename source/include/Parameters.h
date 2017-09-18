@@ -62,7 +62,7 @@ DECLARE_SOP_Namespace_Start()
 
 	namespace UI
 	{			
-		__DECLARE__Filter_Section_PRM(4)
+		__DECLARE__Filter_Section_PRM(5)
 		DECLARE_Default_EdgeGroup_Input_0_PRM(input0)			
 		static auto		processModeChoiceMenuParm_Name = PRM_Name("processmode", "Process Mode");
 		static auto		processModeChoiceMenuParm_Range = PRM_Range(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_RESTRICTED, 2);
@@ -78,7 +78,8 @@ DECLARE_SOP_Namespace_Start()
 		auto			processModeChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &processModeChoiceMenuParm_Name, &processModeChoiceMenuParm_Default, &processModeChoiceMenuParm_ChoiceList, &processModeChoiceMenuParm_Range, &SOP_Operator::CallbackProcessMode, 0, 1, "Specify edge process mode.");		
 
 		DECLARE_Custom_Separator_PRM("filtererrorsseparator", filterErrors)
-		DECLARE_ErroLevelMenu_PRM("edgeislanderrormode", "Edge Island Error Mode", 1, "Specify edge island node error mode.", edgeIsland)
+		DECLARE_ErroLevelMenu_PRM("groupnotspecifiederrormode", "Group Not Specified", 1, "Specify group not specified node error mode.", groupNotSpecified)
+		DECLARE_ErroLevelMenu_PRM("improperedgeislanderrormode", "Improper Edge Island", 1, "Specify improper edge island detection node error mode.", improperEdgeIsland)
 
 		__DECLARE_Main_Section_PRM(6)
 		static auto		lengthModeChoiceMenuParm_Name = PRM_Name("lengthmode", "Length Mode");

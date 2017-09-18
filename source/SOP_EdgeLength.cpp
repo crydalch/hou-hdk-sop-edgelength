@@ -74,7 +74,8 @@ PARAMETERLIST_Start(SOP_Operator)
 	UI::input0EdgeGroup_Parameter,
 	UI::processModeChoiceMenu_Parameter,	
 	UI::filterErrorsSeparator_Parameter,
-	UI::edgeIslandErrorModeChoiceMenu_Parameter,
+	UI::groupNotSpecifiedErrorModeChoiceMenu_Parameter,
+	UI::improperEdgeIslandErrorModeChoiceMenu_Parameter,
 
 	UI::mainSectionSwitcher_Parameter,
 	UI::lengthModeChoiceMenu_Parameter,
@@ -410,7 +411,7 @@ SOP_Operator::SetLengthOfEachEdgeIsland(GA_EdgeIslandBundle& edgeislands, UT_Aut
 	PRM_ACCESS::Get::FloatPRM(this, morphValueState, UI::morphValueFloat_Parameter, time);
 	morphValueState = setMorphState ? 0.01 * morphValueState : 1.0;				// from percentage
 	
-	PRM_ACCESS::Get::IntPRM(this, edgeIslandErrorLevelState, UI::edgeIslandErrorModeChoiceMenu_Parameter, time);
+	PRM_ACCESS::Get::IntPRM(this, edgeIslandErrorLevelState, UI::improperEdgeIslandErrorModeChoiceMenu_Parameter, time);
 
 #define THIS_AddWarning(node, message) { switch (edgeIslandErrorLevelState) { default: /* do nothing */ continue; case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Warning) : { node->addWarning(SOP_ErrorCodes::SOP_MESSAGE, message); } continue; case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Error) : { node->addError(SOP_ErrorCodes::SOP_MESSAGE, message); } return error(); } }
 //#define THIS_AddWarning(node, message) { node->addWarning(SOP_ErrorCodes::SOP_MESSAGE, message); continue; }
@@ -518,8 +519,17 @@ SOP_Operator::cookMySop(OP_Context& context)
 		auto success = this->_edgeGroupInput0 && !this->_edgeGroupInput0->isEmpty();
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE))
 		{			
-			//clearSelection();
-			addWarning(SOP_ErrorCodes::SOP_ERR_BADGROUP);
+			clearSelection();
+
+			exint groupNotSpecifiedState;
+			PRM_ACCESS::Get::IntPRM(this, groupNotSpecifiedState, UI::groupNotSpecifiedErrorModeChoiceMenu_Parameter, currentTime);
+			switch (groupNotSpecifiedState)
+			{
+				default: /* do nothing */ break;
+				case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Warning) : { addWarning(SOP_ErrorCodes::SOP_ERR_BADGROUP); } break;
+				case static_cast<exint>(HOU_NODE_ERROR_LEVEL::Error) : { addError(SOP_ErrorCodes::SOP_ERR_BADGROUP); } break;
+			}
+
 			return error();
 		}
 
