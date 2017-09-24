@@ -84,7 +84,7 @@ void
 newSelector(BM_ResourceManager* manager)
 {
 	// find operator
-	auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(SOP_SmallName);
+	const auto sopOperator = OP_Network::getOperatorTable(SOP_TABLE_NAME)->getOperator(SOP_SmallName);
 	if (!sopOperator)
 	{
 		UT_ASSERT(!"Could not find required operator!");

@@ -514,7 +514,7 @@ SOP_Operator::cookMySop(OP_Context& context)
 {	
 	DEFAULTS_CookMySop()
 	
-	if (duplicateSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
+	if (duplicatePointSource(0, context) < OP_ERROR::UT_ERROR_WARNING && error() < OP_ERROR::UT_ERROR_WARNING && cookInputGroups(context) < OP_ERROR::UT_ERROR_WARNING)
 	{
 		auto success = this->_edgeGroupInput0 && !this->_edgeGroupInput0->isEmpty();
 		if ((success && error() >= OP_ERROR::UT_ERROR_WARNING) || (!success && error() >= OP_ERROR::UT_ERROR_NONE))
