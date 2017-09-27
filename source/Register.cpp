@@ -102,7 +102,14 @@ newSelector(BM_ResourceManager* manager)
 	if (sopOperator)
 	{
 		// setup selector
+#if _WIN32		
 		sopSelector->constructor(static_cast<void*>(&MSS_Selector::CreateMe));
+#elif __APPLE__
+		sopSelector->constructor((void*)&MSS_Selector::CreateMe);		
+#elif __linux
+		sopSelector->constructor((void*)&MSS_Selector::CreateMe);
+#endif
+
 		sopSelector->data(OP3DtheEdgeSelTypes);
 
 		auto success = manager->registerSelector(sopSelector);
