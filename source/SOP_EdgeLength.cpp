@@ -35,9 +35,7 @@ INCLUDES                                                           |
 
 #if _WIN32		
 	#include <sys/SYS_Math.h>
-#elif __APPLE__
-	#include <SYS/SYS_Math.h>
-#elif __linux
+#else
 	#include <SYS/SYS_Math.h>
 #endif		
 
