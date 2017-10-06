@@ -50,8 +50,8 @@ else()
 	)
 	
 	# pack operator files into its own filter
-	Source_Group("Operators\\Headers" FILES ${HDK_SOP_EDGELENGTH_INCLUDE_FILES})
-	Source_Group("Operators\\Source" FILES ${HDK_SOP_EDGELENGTH_SOURCE_FILES})		
+	Source_Group("Operator\\Headers" FILES ${HDK_SOP_EDGELENGTH_INCLUDE_FILES})
+	Source_Group("Operator\\Source" FILES ${HDK_SOP_EDGELENGTH_SOURCE_FILES})		
 	
 	Target_Include_Directories(${PROJECT_NAME} 
 		PUBLIC "${HDK_SOP_EDGELENGTH_INCLUDE_DIR}" 
