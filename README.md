@@ -11,8 +11,8 @@ Overview [video](https://www.youtube.com/watch?v=g-z_6GPlp3U&list=PLWInthQ-GtLhz
 
 **Currently supported platforms:**
 - [x] Windows
-- [ ] Apple
-- [ ] Linux
+- [x] Apple
+- [x] Linux
 
 **TODO:**
 - [ ] add multithreading (but only if I will be reaaalllyyy bored)
