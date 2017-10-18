@@ -2,7 +2,6 @@
 
 ![Example](/images/edge-length-selection-0.gif)
 ![Example](/images/edge-length-selection-2.gif)
-![Example](/images/edge-length-selection-3.gif)
 
 Overview [video](https://www.youtube.com/watch?v=g-z_6GPlp3U&list=PLWInthQ-GtLhzoyqhaJAvzico8mkXMyDI&index=4) on YouTube.
 
