@@ -1,5 +1,3 @@
-# SOP Edge Length HDK implementation. #
-
 ![Example](/images/edge-length-selection-0.gif)
 ![Example](/images/edge-length-selection-2.gif)
 
