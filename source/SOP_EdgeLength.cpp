@@ -58,7 +58,7 @@ DEFINES                                                            |
 #define SOP_SmallName			"modeling::edgelength::1.0"
 #define SOP_Input_Name_0		"Geometry"
 #define SOP_Input_Name_1		"Positions"
-#define SOP_Icon_Name			"nodeway_short_dark_WB.png"
+#define SOP_Icon_Name			"edgelength"
 #define SOP_Base_Operator		SOP_Node
 #define MSS_Selector			GET_SOP_Namespace()::MSS_EdgeLengthSelector
 
